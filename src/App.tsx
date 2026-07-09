@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import RoleProtectedRoute from "./components/auth/RoleProtectedRoute";
 
 // Layouts
 import { DashboardLayout } from './components/layout/DashboardLayout';
@@ -41,15 +42,45 @@ function App() {
           
           {/* Dashboard Routes */}
           <Route path="/dashboard" element={<DashboardLayout />}>
-            <Route path="entrepreneur" element={<EntrepreneurDashboard />} />
-            <Route path="investor" element={<InvestorDashboard />} />
-          </Route>
+  <Route
+    path="entrepreneur"
+    element={
+      <RoleProtectedRoute role="entrepreneur">
+        <EntrepreneurDashboard />
+      </RoleProtectedRoute>
+    }
+  />
+
+  <Route
+    path="investor"
+    element={
+      <RoleProtectedRoute role="investor">
+        <InvestorDashboard />
+      </RoleProtectedRoute>
+    }
+  />
+</Route>
           
           {/* Profile Routes */}
           <Route path="/profile" element={<DashboardLayout />}>
-            <Route path="entrepreneur/:id" element={<EntrepreneurProfile />} />
-            <Route path="investor/:id" element={<InvestorProfile />} />
-          </Route>
+  <Route
+    path="entrepreneur/:id"
+    element={
+      <RoleProtectedRoute role="entrepreneur">
+        <EntrepreneurProfile />
+      </RoleProtectedRoute>
+    }
+  />
+
+  <Route
+    path="investor/:id"
+    element={
+      <RoleProtectedRoute role="investor">
+        <InvestorProfile />
+      </RoleProtectedRoute>
+    }
+  />
+</Route>
           
           {/* Feature Routes */}
           <Route path="/investors" element={<DashboardLayout />}>
