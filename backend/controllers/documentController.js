@@ -8,9 +8,9 @@ const Document = require("../models/Document");
 ========================================== */
 
 const getFileUrl = (req, fileName) => {
-  return `${req.protocol}://${req.get(
-    "host"
-  )}/uploads/documents/${fileName}`;
+  const baseUrl = process.env.BACKEND_URL || `${req.protocol}://${req.get("host")}`;
+
+  return `${baseUrl}/uploads/documents/${fileName}`;
 };
 
 /* ==========================================
