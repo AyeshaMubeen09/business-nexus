@@ -1,0 +1,456 @@
+#API DOCUMENTATION 
+
+# User API
+
+## Get Logged-in User Profile
+
+Returns the profile information of the currently authenticated user.
+
+### Endpoint
+
+```
+GET /api/users/profile
+```
+
+### Base URL
+
+```
+http://localhost:5000/api
+```
+
+### Authentication
+
+Required (JWT Bearer Token)
+
+### Headers
+
+| Key           | Value            |
+| ------------- | ---------------- |
+| Authorization | Bearer JWT_TOKEN |
+
+### Success Response
+
+**Status Code:** `200 OK`
+
+```json
+{
+  "success": true,
+  "user": {
+    "_id": "...",
+    "name": "Test User",
+    "email": "test@example.com",
+    "role": "entrepreneur"
+  }
+}
+```
+
+### Possible Responses
+
+| Status | Description                  |
+| ------ | ---------------------------- |
+| 200    | Profile fetched successfully |
+| 401    | Unauthorized                 |
+| 404    | User not found               |
+| 500    | Internal server error        |
+
+### Features
+
+* Returns authenticated user's profile.
+* Used by AuthContext after login.
+* Verifies JWT before returning data.
+
+---
+
+## Update User Profile
+
+Updates the authenticated user's profile.
+
+### Endpoint
+
+```
+PUT /api/users/profile
+```
+
+### Authentication
+
+Required
+
+### Request Body
+
+```json
+{
+  "bio":"Building AI Startup",
+  "location":"Pakistan",
+  "website":"https://example.com",
+  "industry":"AI"
+}
+```
+
+### Features
+
+* Updates entrepreneur/investor profile.
+* Supports profile completion.
+* Saves profile changes in MongoDB.
+
+---
+
+# Meeting API
+
+## Schedule Meeting
+
+Creates a new meeting request.
+
+### Endpoint
+
+```
+POST /api/meetings
+```
+
+### Authentication
+
+Required
+
+### Request Body
+
+```json
+{
+  "title":"Investment Discussion",
+  "description":"Discuss funding opportunity",
+  "meetingType":"Video Call",
+  "date":"2026-07-20",
+  "startTime":"15:00",
+  "endTime":"16:00",
+  "investor":"USER_ID"
+}
+```
+
+### Success Response
+
+```json
+{
+    "success": true,
+    "message":"Meeting scheduled successfully."
+}
+```
+
+### Possible Responses
+
+| Status | Description           |
+| ------ | --------------------- |
+| 201    | Meeting created       |
+| 400    | Missing fields        |
+| 409    | Meeting time conflict |
+| 500    | Server error          |
+
+### Features
+
+* Creates meeting requests.
+* Prevents scheduling conflicts.
+* Supports Video, Phone and In Person meetings.
+* Stores meeting creator.
+* Default status is Pending.
+
+---
+
+## Get My Meetings
+
+### Endpoint
+
+```
+GET /api/meetings
+```
+
+### Authentication
+
+Required
+
+### Features
+
+* Returns all meetings.
+* Populates investor and entrepreneur information.
+* Sorts meetings by status and date.
+* Returns upcoming meetings first.
+
+---
+
+## Get Single Meeting
+
+### Endpoint
+
+```
+GET /api/meetings/:id
+```
+
+### Features
+
+* Returns complete meeting information.
+* Populates participant details.
+
+---
+
+## Accept Meeting
+
+### Endpoint
+
+```
+PUT /api/meetings/:id/accept
+```
+
+### Features
+
+* Changes status to Accepted.
+* Only intended participant can accept.
+* Saves updated meeting.
+
+---
+
+## Reject Meeting
+
+### Endpoint
+
+```
+PUT /api/meetings/:id/reject
+```
+
+### Features
+
+* Changes status to Rejected.
+* Prevents unauthorized access.
+
+---
+
+## Cancel Meeting
+
+### Endpoint
+
+```
+PUT /api/meetings/:id/cancel
+```
+
+### Features
+
+* Cancels scheduled meeting.
+* Updates meeting status.
+
+---
+
+## Delete Meeting
+
+### Endpoint
+
+```
+DELETE /api/meetings/:id
+```
+
+### Features
+
+* Deletes meeting.
+* Only authorized users may delete.
+* Removes meeting from database.
+
+---
+
+# Document API
+
+## Upload Document
+
+Uploads a PDF document.
+
+### Endpoint
+
+```
+POST /api/documents/upload
+```
+
+### Authentication
+
+Required
+
+### Content-Type
+
+```
+multipart/form-data
+```
+
+### Form Data
+
+| Key      | Type |
+| -------- | ---- |
+| title    | Text |
+| document | File |
+
+### Features
+
+* Uploads PDF document.
+* Stores metadata.
+* Generates document version.
+* Stores uploadedBy.
+* Creates downloadable file URL.
+
+---
+
+## Get My Documents
+
+### Endpoint
+
+```
+GET /api/documents
+```
+
+### Authentication
+
+Required
+
+### Features
+
+* Returns authenticated user's documents.
+* Sorted by upload date.
+* Includes file URL.
+
+---
+
+## Get Single Document
+
+### Endpoint
+
+```
+GET /api/documents/:id
+```
+
+### Features
+
+* Returns document metadata.
+* Includes uploader information.
+* Generates preview URL.
+
+---
+
+## Download Document
+
+### Endpoint
+
+```
+GET /api/documents/download/:id
+```
+
+### Features
+
+* Downloads original uploaded PDF.
+* Preserves original filename.
+* Checks file existence.
+
+---
+
+## Delete Document
+
+### Endpoint
+
+```
+DELETE /api/documents/:id
+```
+
+### Features
+
+* Deletes uploaded document.
+* Removes physical PDF from uploads folder.
+* Only uploader can delete.
+
+---
+
+## Sign Document
+
+### Endpoint
+
+```
+PUT /api/documents/sign/:id
+```
+
+### Authentication
+
+Required
+
+### Request Body
+
+```json
+{
+   "signature":"data:image/png;base64,..."
+}
+```
+
+### Features
+
+* Saves handwritten digital signature.
+* Stores signature image.
+* Updates status to Signed.
+* Prevents unauthorized signing.
+
+---
+
+# Socket.IO Events (Video Calling)
+
+Although these are not REST APIs, they are part of the communication layer.
+
+| Client Event  | Purpose                 |
+| ------------- | ----------------------- |
+| join-room     | Join meeting room       |
+| offer         | Send WebRTC offer       |
+| answer        | Send WebRTC answer      |
+| ice-candidate | Exchange ICE candidates |
+
+---
+
+# Authentication
+
+All protected endpoints require:
+
+```
+Authorization: Bearer <JWT_TOKEN>
+```
+
+---
+
+# Error Responses
+
+| Status Code | Meaning                         |
+| ----------- | ------------------------------- |
+| 200         | Request successful              |
+| 201         | Resource created                |
+| 400         | Invalid request                 |
+| 401         | Unauthorized                    |
+| 403         | Forbidden                       |
+| 404         | Resource not found              |
+| 409         | Conflict (meeting overlap etc.) |
+| 500         | Internal server error           |
+
+---
+
+# Technologies Used
+
+* Node.js
+* Express.js
+* MongoDB
+* Mongoose
+* JWT Authentication
+* Multer (Document Uploads)
+* Socket.IO
+* WebRTC
+* React
+* TypeScript
+* Axios
+* React PDF
+* React Signature Canvas
+
+---
+
+This gives you a polished API documentation covering every major API implemented during Weeks 1 and 2:
+
+* ✅ Authentication
+* ✅ User Management
+* ✅ Meeting Scheduling
+* ✅ Document Management
+* ✅ E-Signature
+* ✅ Socket.IO/WebRTC events
+* ✅ Authentication flow
+* ✅ Common response codes
+* ✅ Technology stack
+
