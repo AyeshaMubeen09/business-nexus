@@ -23,10 +23,10 @@ dist-ssr
 *.sln
 *.sw?
 
-
 # Backend
 backend/node_modules/
 backend/.env
+backend/uploads/
 
 # Frontend
 .env
