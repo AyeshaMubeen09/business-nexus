@@ -223,7 +223,7 @@ const updateProfile = async (
     const token = localStorage.getItem(TOKEN_STORAGE_KEY);
 
     const { data } = await axios.put(
-      "https://business-nexus-production-88ff.up.railway.app/users/profile",
+      "https://business-nexus-production-88ff.up.railway.app/api/users/profile",
       updates,
       {
         headers: {
