@@ -10,8 +10,8 @@ const USER_STORAGE_KEY = "business_nexus_user";
 const TOKEN_STORAGE_KEY = "business_nexus_token";
 const RESET_TOKEN_KEY = "business_nexus_reset_token";
 
-const API_URL = "http://localhost:5000/api/auth";
-const USER_API_URL = "http://localhost:5000/api/users";
+const API_URL = "https://business-nexus-production-88ff.up.railway.app/api/auth";
+const USER_API_URL = "https://business-nexus-production-88ff.up.railway.app/api/users";
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -223,7 +223,7 @@ const updateProfile = async (
     const token = localStorage.getItem(TOKEN_STORAGE_KEY);
 
     const { data } = await axios.put(
-      "http://localhost:5000/api/users/profile",
+      "https://business-nexus-production-88ff.up.railway.app/users/profile",
       updates,
       {
         headers: {

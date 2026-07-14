@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:5000/api/meetings";
+const API_URL = "https://business-nexus-production-88ff.up.railway.app/api/meetings";
 
 const getAuthHeader = () => ({
   headers: {
