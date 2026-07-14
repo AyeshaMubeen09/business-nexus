@@ -5,8 +5,13 @@ export interface User {
   name: string;
   email: string;
   role: UserRole;
+
   avatarUrl: string;
   bio: string;
+  location: string;
+  website: string;
+  linkedin: string;
+
   isOnline?: boolean;
   createdAt: string;
 }
@@ -68,14 +73,121 @@ export interface Document {
   ownerId: string;
 }
 
+/* ==========================================
+   MEETINGS
+========================================== */
+
+export type MeetingStatus =
+  | "Pending"
+  | "Accepted"
+  | "Rejected"
+  | "Cancelled"
+  | "Completed"
+  | "Missed";
+
+
+export type MeetingType =
+  | "Video Call"
+  | "Audio Call"
+  | "In Person";
+
+export interface MeetingParticipant {
+  _id: string;
+  name: string;
+  email: string;
+  role: UserRole;
+  avatarUrl: string;
+}
+
+export interface Meeting {
+  _id: string;
+
+  entrepreneur: MeetingParticipant;
+
+  investor: MeetingParticipant;
+
+  createdBy: MeetingParticipant;
+
+  title: string;
+  description: string;
+
+  meetingType: MeetingType;
+
+  date: string;
+
+  startTime: string;
+
+  endTime: string;
+
+  status: MeetingStatus;
+
+callStartedAt: string | null;
+
+callEndedAt: string | null;
+
+callDuration: number;
+
+  createdAt: string;
+
+  updatedAt: string;
+}
+
+export interface CreateMeetingPayload {
+  investor: string;
+  entrepreneur: string;
+
+  title: string;
+  description?: string;
+
+  meetingType: MeetingType;
+
+  date: string;
+
+  startTime: string;
+
+  endTime: string;
+}
+
 export interface AuthContextType {
   user: User | null;
-  login: (email: string, password: string, role: UserRole) => Promise<void>;
-  register: (name: string, email: string, password: string, role: UserRole) => Promise<void>;
+
+  login: (
+    email: string,
+    password: string,
+    role: UserRole
+  ) => Promise<void>;
+
+  register: (
+    name: string,
+    email: string,
+    password: string,
+    role: UserRole
+  ) => Promise<void>;
+
   logout: () => void;
+
   forgotPassword: (email: string) => Promise<void>;
-  resetPassword: (token: string, newPassword: string) => Promise<void>;
-  updateProfile: (userId: string, updates: Partial<User>) => Promise<void>;
+
+  resetPassword: (
+    token: string,
+    newPassword: string
+  ) => Promise<void>;
+
+  updateProfile: (
+    userId: string,
+    updates: Partial<User>
+  ) => Promise<void>;
+
+  updateEmail: (
+    currentPassword: string,
+    newEmail: string
+  ) => Promise<void>;
+
+  updatePassword: (
+    currentPassword: string,
+    newPassword: string
+  ) => Promise<void>;
+
   isAuthenticated: boolean;
   isLoading: boolean;
 }

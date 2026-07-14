@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { createContext, useState, useContext, useEffect } from "react";
 import { User, UserRole, AuthContextType } from "../types";
 import toast from "react-hot-toast";
+import { socket } from "../socket/socket";
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -34,12 +35,18 @@ useEffect(() => {
         },
       });
 
-      setUser(data.user);
+const normalizedUser = {
+  ...data.user,
+  id: data.user._id,
+};
 
-      localStorage.setItem(
-        USER_STORAGE_KEY,
-        JSON.stringify(data.user)
-      );
+setUser(normalizedUser);
+
+localStorage.setItem(
+  USER_STORAGE_KEY,
+  JSON.stringify(normalizedUser)
+);
+
     } catch (error) {
       console.error(error);
 
@@ -55,6 +62,24 @@ useEffect(() => {
   loadUser();
 }, []);
 
+/* ==========================================
+   SOCKET CONNECTION
+========================================== */
+
+useEffect(() => {
+  if (!user) return;
+
+  socket.connect();
+
+  console.log("Socket Connected");
+
+  return () => {
+    socket.disconnect();
+
+    console.log("Socket Disconnected");
+  };
+}, [user]);
+
   // LOGIN
   const login = async (
     email: string,
@@ -69,15 +94,23 @@ useEffect(() => {
         password,
         role,
       });
+      const normalizedUser = {
+  ...data.user,
+  id: data.user._id,
+};
 
-      localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(data.user));
+localStorage.setItem(
+  USER_STORAGE_KEY,
+  JSON.stringify(normalizedUser)
+);
+
       localStorage.setItem(TOKEN_STORAGE_KEY, data.token);
 
       axios.defaults.headers.common[
   "Authorization"
 ] = `Bearer ${data.token}`;
 
-      setUser(data.user);
+setUser(normalizedUser);
       
       toast.success(data.message);
     } catch (error: any) {
@@ -108,14 +141,23 @@ useEffect(() => {
         role,
       });
 
-      localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(data.user));
+const normalizedUser = {
+  ...data.user,
+  id: data.user._id,
+};
+
+localStorage.setItem(
+  USER_STORAGE_KEY,
+  JSON.stringify(normalizedUser)
+);
+
       localStorage.setItem(TOKEN_STORAGE_KEY, data.token);
 
       axios.defaults.headers.common[
   "Authorization"
 ] = `Bearer ${data.token}`;
 
-      setUser(data.user);
+setUser(normalizedUser);
 
       toast.success(data.message);
     } catch (error: any) {
@@ -190,12 +232,17 @@ const updateProfile = async (
       }
     );
 
-    setUser(data.user);
+const normalizedUser = {
+  ...data.user,
+  id: data.user._id,
+};
 
-    localStorage.setItem(
-      USER_STORAGE_KEY,
-      JSON.stringify(data.user)
-    );
+setUser(normalizedUser);
+
+localStorage.setItem(
+  USER_STORAGE_KEY,
+  JSON.stringify(normalizedUser)
+);
 
     toast.success(data.message);
   } catch (error: any) {
@@ -207,18 +254,91 @@ const updateProfile = async (
   }
 };
 
-  const value = {
-    user,
-    login,
-    register,
-    logout,
-    forgotPassword,
-    resetPassword,
-    updateProfile,
-    isAuthenticated: !!user,
-    isLoading,
-  };
+const updateEmail = async (
+  currentPassword: string,
+  newEmail: string
+): Promise<void> => {
+  try {
+    const token = localStorage.getItem(TOKEN_STORAGE_KEY);
 
+    const { data } = await axios.put(
+      `${USER_API_URL}/profile`,
+      {
+        email: newEmail,
+        currentPassword,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+const normalizedUser = {
+  ...data.user,
+  id: data.user._id,
+};
+
+setUser(normalizedUser);
+
+localStorage.setItem(
+  USER_STORAGE_KEY,
+  JSON.stringify(normalizedUser)
+);
+
+    toast.success("Email updated successfully");
+  } catch (error: any) {
+    const message =
+      error.response?.data?.message || "Failed to update email";
+
+    toast.error(message);
+    throw new Error(message);
+  }
+};
+
+const updatePassword = async (
+  currentPassword: string,
+  newPassword: string
+): Promise<void> => {
+  try {
+    const token = localStorage.getItem(TOKEN_STORAGE_KEY);
+
+    const { data } = await axios.put(
+      `${USER_API_URL}/profile`,
+      {
+        currentPassword,
+        newPassword,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    toast.success(data.message);
+  } catch (error: any) {
+    const message =
+      error.response?.data?.message || "Failed to update password";
+
+    toast.error(message);
+    throw new Error(message);
+  }
+};
+
+const value = {
+  user,
+  login,
+  register,
+  logout,
+  forgotPassword,
+  resetPassword,
+  updateProfile,
+  updateEmail,
+  updatePassword,
+  isAuthenticated: !!user,
+  isLoading,
+};
   return (
     <AuthContext.Provider value={value}>
       {children}

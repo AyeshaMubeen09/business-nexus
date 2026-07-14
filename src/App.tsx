@@ -1,5 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
+
 import { AuthProvider } from './context/AuthContext';
 import RoleProtectedRoute from "./components/auth/RoleProtectedRoute";
 
@@ -23,113 +25,187 @@ import { InvestorsPage } from './pages/investors/InvestorsPage';
 import { EntrepreneursPage } from './pages/entrepreneurs/EntrepreneursPage';
 import { MessagesPage } from './pages/messages/MessagesPage';
 import { NotificationsPage } from './pages/notifications/NotificationsPage';
-import { DocumentsPage } from './pages/documents/DocumentsPage';
+import DocumentsPage from "./pages/documents/DocumentsPage";
 import { SettingsPage } from './pages/settings/SettingsPage';
 import { HelpPage } from './pages/help/HelpPage';
 import { DealsPage } from './pages/deals/DealsPage';
+import MeetingsPage from "./pages/meetings/MeetingsPage";
+import VideoCallPage from "./pages/video/VideoCallPage";
+
 
 // Chat Pages
 import { ChatPage } from './pages/chat/ChatPage';
 
 function App() {
-  return (
-    <AuthProvider>
-      <Router>
-        <Routes>
-          {/* Authentication Routes */}
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          
-          {/* Dashboard Routes */}
-          <Route path="/dashboard" element={<DashboardLayout />}>
-  <Route
-    path="entrepreneur"
-    element={
-      <RoleProtectedRoute role="entrepreneur">
-        <EntrepreneurDashboard />
-      </RoleProtectedRoute>
-    }
-  />
+return ( <AuthProvider>
 
+  <Router>
+
+    {/* ==========================================
+        GLOBAL TOAST NOTIFICATIONS
+    ========================================== */}
+
+    <Toaster
+      position="top-right"
+      reverseOrder={false}
+      toastOptions={{
+        duration: 3000,
+      }}
+    />
+
+
+    <Routes>
+
+      {/* Authentication Routes */}
+
+      <Route path="/login" element={<LoginPage />} />
+
+      <Route path="/register" element={<RegisterPage />} />
+
+
+      {/* Dashboard Routes */}
+
+      <Route path="/dashboard" element={<DashboardLayout />}>
+
+        <Route
+          path="entrepreneur"
+          element={
+            <RoleProtectedRoute role="entrepreneur">
+              <EntrepreneurDashboard />
+            </RoleProtectedRoute>
+          }
+        />
+
+
+        <Route
+          path="investor"
+          element={
+            <RoleProtectedRoute role="investor">
+              <InvestorDashboard />
+            </RoleProtectedRoute>
+          }
+        />
+
+      </Route>
+
+
+
+      {/* Profile Routes */}
+
+      <Route path="/profile" element={<DashboardLayout />}>
+
+        <Route
+          path="entrepreneur/:id"
+          element={
+            <RoleProtectedRoute role="entrepreneur">
+              <EntrepreneurProfile />
+            </RoleProtectedRoute>
+          }
+        />
+
+
+        <Route
+          path="investor/:id"
+          element={
+            <RoleProtectedRoute role="investor">
+              <InvestorProfile />
+            </RoleProtectedRoute>
+          }
+        />
+
+      </Route>
+
+
+
+      {/* Feature Routes */}
+
+      <Route path="/investors" element={<DashboardLayout />}>
+        <Route index element={<InvestorsPage />} />
+      </Route>
+
+
+      <Route path="/entrepreneurs" element={<DashboardLayout />}>
+        <Route index element={<EntrepreneursPage />} />
+      </Route>
+
+
+      <Route path="/messages" element={<DashboardLayout />}>
+        <Route index element={<MessagesPage />} />
+      </Route>
+
+
+      <Route path="/notifications" element={<DashboardLayout />}>
+        <Route index element={<NotificationsPage />} />
+      </Route>
+
+
+      <Route path="/documents" element={<DashboardLayout />}>
+        <Route index element={<DocumentsPage />} />
+      </Route>
+
+
+      <Route path="/meetings" element={<DashboardLayout />}>
+        <Route index element={<MeetingsPage />} />
+      </Route>
+
+<Route path="/video-call" element={<DashboardLayout />}>
   <Route
-    path="investor"
-    element={
-      <RoleProtectedRoute role="investor">
-        <InvestorDashboard />
-      </RoleProtectedRoute>
-    }
+    path=":meetingId"
+    element={<VideoCallPage />}
   />
 </Route>
-          
-          {/* Profile Routes */}
-          <Route path="/profile" element={<DashboardLayout />}>
-  <Route
-    path="entrepreneur/:id"
-    element={
-      <RoleProtectedRoute role="entrepreneur">
-        <EntrepreneurProfile />
-      </RoleProtectedRoute>
-    }
-  />
 
-  <Route
-    path="investor/:id"
-    element={
-      <RoleProtectedRoute role="investor">
-        <InvestorProfile />
-      </RoleProtectedRoute>
-    }
-  />
-</Route>
-          
-          {/* Feature Routes */}
-          <Route path="/investors" element={<DashboardLayout />}>
-            <Route index element={<InvestorsPage />} />
-          </Route>
-          
-          <Route path="/entrepreneurs" element={<DashboardLayout />}>
-            <Route index element={<EntrepreneursPage />} />
-          </Route>
-          
-          <Route path="/messages" element={<DashboardLayout />}>
-            <Route index element={<MessagesPage />} />
-          </Route>
-          
-          <Route path="/notifications" element={<DashboardLayout />}>
-            <Route index element={<NotificationsPage />} />
-          </Route>
-          
-          <Route path="/documents" element={<DashboardLayout />}>
-            <Route index element={<DocumentsPage />} />
-          </Route>
-          
-          <Route path="/settings" element={<DashboardLayout />}>
-            <Route index element={<SettingsPage />} />
-          </Route>
-          
-          <Route path="/help" element={<DashboardLayout />}>
-            <Route index element={<HelpPage />} />
-          </Route>
-          
-          <Route path="/deals" element={<DashboardLayout />}>
-            <Route index element={<DealsPage />} />
-          </Route>
-          
-          {/* Chat Routes */}
-          <Route path="/chat" element={<DashboardLayout />}>
-            <Route index element={<ChatPage />} />
-            <Route path=":userId" element={<ChatPage />} />
-          </Route>
-          
-          {/* Redirect root to login */}
-          <Route path="/" element={<Navigate to="/login" replace />} />
-          
-          {/* Catch all other routes and redirect to login */}
-          <Route path="*" element={<Navigate to="/login" replace />} />
-        </Routes>
-      </Router>
-    </AuthProvider>
-  );
+      <Route path="/settings" element={<DashboardLayout />}>
+        <Route index element={<SettingsPage />} />
+      </Route>
+
+
+      <Route path="/help" element={<DashboardLayout />}>
+        <Route index element={<HelpPage />} />
+      </Route>
+
+
+      <Route path="/deals" element={<DashboardLayout />}>
+        <Route index element={<DealsPage />} />
+      </Route>
+
+
+
+      {/* Chat Routes */}
+
+      <Route path="/chat" element={<DashboardLayout />}>
+
+        <Route index element={<ChatPage />} />
+
+        <Route path=":userId" element={<ChatPage />} />
+
+      </Route>
+
+
+
+      {/* Redirect Root */}
+
+      <Route
+        path="/"
+        element={<Navigate to="/login" replace />}
+      />
+
+
+      {/* Catch All */}
+
+      <Route
+        path="*"
+        element={<Navigate to="/login" replace />}
+      />
+
+
+    </Routes>
+
+  </Router>
+
+</AuthProvider>
+
+);
 }
 
 export default App;

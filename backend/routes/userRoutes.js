@@ -4,10 +4,17 @@ const router = express.Router();
 const {
   getProfile,
   updateProfile,
+  getAllUsers,
 } = require("../controllers/userController");
 
 const { protect } = require("../middleware/authMiddleware");
 const { authorize } = require("../middleware/roleMiddleware");
+
+/* ==========================================
+   USERS
+========================================== */
+
+router.get("/", protect, getAllUsers);
 
 // Profile
 router.get("/profile", protect, getProfile);
