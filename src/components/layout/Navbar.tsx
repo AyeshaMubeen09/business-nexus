@@ -1,6 +1,19 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Menu, X, Bell, MessageCircle, User, LogOut, Building2, CircleDollarSign } from 'lucide-react';
+import {
+  Menu,
+  X,
+  Bell,
+  MessageCircle,
+  User,
+  LogOut,
+  Building2,
+  CircleDollarSign,
+  CalendarDays,
+  FileText,
+  Users,
+} from 'lucide-react';
+
 import { useAuth } from '../../context/AuthContext';
 import { Avatar } from '../ui/Avatar';
 import { Button } from '../ui/Button';
@@ -9,48 +22,144 @@ export const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  
+
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
-  
+
   const handleLogout = () => {
     logout();
     navigate('/login');
   };
-  
-  // User dashboard route based on role
-  const dashboardRoute = user?.role === 'entrepreneur' 
-    ? '/dashboard/entrepreneur' 
-    : '/dashboard/investor';
-  
-  // User profile route based on role and ID
-  const profileRoute = user 
-    ? `/profile/${user.role}/${user.id}` 
+
+  // Dashboard route
+  const dashboardRoute =
+    user?.role === 'entrepreneur'
+      ? '/dashboard/entrepreneur'
+      : '/dashboard/investor';
+
+  // Profile route
+  const profileRoute = user
+    ? `/profile/${user.role}/${user.id}`
     : '/login';
-  
-  const navLinks = [
+
+  // Entrepreneur Mobile Navigation
+  const entrepreneurNavLinks = [
     {
-      icon: user?.role === 'entrepreneur' ? <Building2 size={18} /> : <CircleDollarSign size={18} />,
+      icon: <Building2 size={18} />,
       text: 'Dashboard',
       path: dashboardRoute,
     },
     {
+      icon: <User size={18} />,
+      text: 'My Startup',
+      path: profileRoute,
+    },
+    {
+      icon: <CircleDollarSign size={18} />,
+      text: 'Find Investors',
+      path: '/investors',
+    },
+    {
       icon: <MessageCircle size={18} />,
       text: 'Messages',
-      path: user ? '/messages' : '/login',
+      path: '/messages',
+    },
+    {
+      icon: <CalendarDays size={18} />,
+      text: 'Meetings',
+      path: '/meetings',
     },
     {
       icon: <Bell size={18} />,
       text: 'Notifications',
-      path: user ? '/notifications' : '/login',
+      path: '/notifications',
+    },
+    {
+      icon: <FileText size={18} />,
+      text: 'Documents',
+      path: '/documents',
+    },
+  ];
+
+  // Investor Mobile Navigation
+  const investorNavLinks = [
+    {
+      icon: <CircleDollarSign size={18} />,
+      text: 'Dashboard',
+      path: dashboardRoute,
     },
     {
       icon: <User size={18} />,
-      text: 'Profile',
+      text: 'My Portfolio',
       path: profileRoute,
-    }
+    },
+    {
+      icon: <Users size={18} />,
+      text: 'Find Startups',
+      path: '/entrepreneurs',
+    },
+    {
+      icon: <MessageCircle size={18} />,
+      text: 'Messages',
+      path: '/messages',
+    },
+    {
+      icon: <CalendarDays size={18} />,
+      text: 'Meetings',
+      path: '/meetings',
+    },
+    {
+      icon: <Bell size={18} />,
+      text: 'Notifications',
+      path: '/notifications',
+    },
+    {
+      icon: <FileText size={18} />,
+      text: 'Documents',
+      path: '/documents',
+    },
+    {
+      icon: <FileText size={18} />,
+      text: 'Deals',
+      path: '/deals',
+    },
   ];
+
+ // Desktop Navigation (keep original)
+const desktopNavLinks = [
+  {
+    icon:
+      user?.role === 'entrepreneur' ? (
+        <Building2 size={18} />
+      ) : (
+        <CircleDollarSign size={18} />
+      ),
+    text: 'Dashboard',
+    path: dashboardRoute,
+  },
+  {
+    icon: <MessageCircle size={18} />,
+    text: 'Messages',
+    path: user ? '/messages' : '/login',
+  },
+  {
+    icon: <Bell size={18} />,
+    text: 'Notifications',
+    path: user ? '/notifications' : '/login',
+  },
+  {
+    icon: <User size={18} />,
+    text: 'Profile',
+    path: profileRoute,
+  },
+];
+
+// Mobile Navigation
+const mobileNavLinks =
+  user?.role === 'entrepreneur'
+    ? entrepreneurNavLinks
+    : investorNavLinks;
   
   return (
     <nav className="bg-white shadow-md">
@@ -73,7 +182,7 @@ export const Navbar: React.FC = () => {
           <div className="hidden md:flex md:items-center md:ml-6">
             {user ? (
               <div className="flex items-center space-x-4">
-                {navLinks.map((link, index) => (
+                {desktopNavLinks.map((link, index) => (
                   <Link
                     key={index}
                     to={link.path}
@@ -150,7 +259,7 @@ export const Navbar: React.FC = () => {
                 </div>
                 
                 <div className="border-t border-gray-200 pt-2">
-                  {navLinks.map((link, index) => (
+                  {mobileNavLinks.map((link, index) => (
                     <Link
                       key={index}
                       to={link.path}
