@@ -82,6 +82,30 @@ backend/
  └── uploads/
 ```
 
+## 📁 File Uploads
+
+Uploaded documents are stored locally in:
+
+backend/uploads/documents/
+
+This directory is intentionally excluded from version control using `.gitignore` to prevent uploaded files from being committed to the repository.
+
+If the directory does not exist after cloning the project, create it manually:
+
+```bash
+mkdir -p backend/uploads/documents
+```
+
+or on Windows:
+
+```text
+backend/
+└── uploads/
+    └── documents/
+```
+
+The application will then be able to upload and preview documents normally.
+
 ## ▶️ Getting Started
 
 ```bash
