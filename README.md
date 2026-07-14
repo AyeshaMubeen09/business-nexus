@@ -2,6 +2,9 @@
 
 A full-stack collaboration platform built to connect **Entrepreneurs** and **Investors** through secure authentication, real-time communication, meeting scheduling, and document management.
 
+#Deployment link 
+https://business-nexus-production-34fc.up.railway.app
+
 ## 🚀 Features
 
 * 🔐 JWT Authentication & Role-Based Authorization
